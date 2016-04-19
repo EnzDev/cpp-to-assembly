@@ -143,6 +143,26 @@ render=(data)->
           $("#connection").remove()
           return
       
+    asm_code.find("pre").hover ()->
+          link(asm_code,c_codecode,$("#code"+(parseInt($(this).attr("class").replace("sh_asm link",""))-1)),false) if !$(this).attr("class").contains("0")
+        ,
+        ()->
+          codeb=null
+          $(".glow").removeClass("glow")
+          $("#connection").remove()
+          return
+
+    asm_code.find("pre").click ()->
+          k2=parseInt($(this).attr("class").replace("sh_asm link",""))-1
+          k=k2+1
+          link(asm_code,c_codecode,$("#code#{k2}"),true) if k2!=0
+          el=this
+          first=$(".link#{k}").first()
+          if first.length>0 && k2!=0
+              asm_code.animate {
+                    scrollTop: first.offset().top-asm_code.offset().top+asm_code.scrollTop()-$(this).offset().top+asm_code.offset().top
+               }, 1
+
     sh_highlightDocument()
     $("#compile").button('reset')
     $('html, body').animate {
