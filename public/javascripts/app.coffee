@@ -30,7 +30,7 @@ class LineCanvas
     item.update() for item in @container
     return
 pcodeb=null;
-codeb=null; 
+codeb=null;
 link=(asm_code,c_codecode,current,permanent)->
   prefix=if permanent then "p" else ""
   color= if permanent then "#B8FF79" else "#ffee79"
@@ -42,7 +42,7 @@ link=(asm_code,c_codecode,current,permanent)->
   $(current).parent().append(connection)
   connection.css
     "margin-left":$(current).outerWidth()-1
-    top:c_codecode.offset().top-$(current).parent().parent().offset().top  
+    top:c_codecode.offset().top-$(current).parent().parent().offset().top
   normaloff=c_codecode.offset().top
   max=Math.min(c_codecode.height(),asm_code.height())
   #Create SVG canvas using Raphael.js
@@ -99,7 +99,7 @@ render=(data)->
         codeb.update()
       if pcodeb?
         pcodeb.update()
-        
+
     c_codecode.scroll ()->
       if codeb?
         codeb.update()
@@ -119,7 +119,7 @@ render=(data)->
     $.each data.asm, (k,v)->
       $.each v, (k2,v2)->
         asm_block= $ """<pre></pre>"""
- 
+
         asm_block.text(v2)
         asm_block.addClass "sh_asm link#{k2}"
         asm_code.append asm_block
@@ -142,7 +142,7 @@ render=(data)->
           $(".glow").removeClass("glow")
           $("#connection").remove()
           return
-      
+
     asm_code.find("pre").hover ()->
           link(asm_code,c_codecode,$("#code"+(parseInt($(this).attr("class").replace("sh_asm link",""))-1)),false) if !$(this).attr("class").contains("0")
         ,
@@ -169,6 +169,23 @@ render=(data)->
           scrollTop: $("#code").offset().top-10
     }, 380
 
+
+#Display of the selected comilation function (the reddish thingy)
+updateCompileString = () ->
+  compilestring = ''
+  compilestring += if $("input[name=arm]").is(":checked") then "arm-linux-gnueabi-g++-4.6 " else "gcc "
+  compilestring += if $("input[name='intel_asm']").is(":checked") then "-masm=intel " else ""
+  compilestring += "-std=" + $("select[name='standard']").val() + " "
+  compilestring += "-c "
+  compilestring += if $("input[name='optimize']").is(":checked") then "-O2 " else ""
+  compilestring += "-Wa,-ald -g "
+  compilestring += "myCode." + $("input[name=language]:checked").val()
+
+  $('#compilation_string').html(compilestring)
+
+
+
+
 #On page load
 $ ()->
   #bind load sample code
@@ -189,8 +206,8 @@ $ ()->
     $(this).button('loading')
     #start ajax request
     $.post "/compile", $("form").serialize(), ( response )->
-      render(response)  
+      render(response)
     false
+  updateCompileString();
+  $("#compilation-form").change(updateCompileString)
   return
- 
- 
